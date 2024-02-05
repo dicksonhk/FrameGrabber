@@ -80,7 +80,7 @@ jobs:
             then
               scheme_buildable=$scheme
             else
-              scheme_buildable=$(find "$archive_path.xcarchive/Products/Applications" -maxdepth 1 -type d -name "*.app" -print -quit | basename .app)
+              scheme_buildable=$(find "$archive_path.xcarchive/Products/Applications" -maxdepth 1 -type d -name "*.app" -exec basename {} .app \; -quit)
             fi
           fi
           echo "scheme_buildable=$scheme_buildable" >> $GITHUB_OUTPUT
