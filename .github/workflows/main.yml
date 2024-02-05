@@ -32,7 +32,7 @@ jobs:
           if [ $scheme = default ]
           then
             scheme_list=$(xcodebuild -list -json | tr -d "\n")
-            scheme=$(echo $scheme_list | ruby -e "require 'json'; puts JSON.parse(STDIN.gets)['project']['targets'][0]")
+            scheme=$(echo $scheme_list | ruby -e "require 'json'; puts JSON.parse(STDIN.gets)['project']['schemes'][0]")
             echo $scheme_list
             echo Using default scheme: $scheme
           else
