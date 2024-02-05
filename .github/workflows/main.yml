@@ -41,11 +41,6 @@ jobs:
             echo Using configured scheme: $scheme
           fi
           echo "scheme=$scheme" >> $GITHUB_OUTPUT
-          if [ $scheme_buildable = default ]
-          then
-            scheme_buildable=$scheme
-          fi
-          echo "scheme=$scheme" >> $GITHUB_OUTPUT
       - name: Set filetype_parameter
         id: filetype_parameter
         run: |
@@ -85,7 +80,7 @@ jobs:
             then
               scheme_buildable=$scheme
             else
-              scheme_buildable=$(find "$archive_path.xcarchive/Products/Applications/" -maxdepth 1 -type d -name "*.ipa" -print -quit)
+              scheme_buildable=$(find "$archive_path.xcarchive/Products/Applications/" -maxdepth 1 -type d -name "*.app" -print -quit | sed "s/\.app$//")
             fi
           fi
           echo "scheme_buildable=$scheme_buildable" >> $GITHUB_OUTPUT
