@@ -20,7 +20,7 @@ jobs:
       archive_path: archive
     outputs:
       scheme: ${{ steps.scheme.outputs.scheme }}
-      scheme_buildable: ${{ steps.scheme.outputs.scheme_buildable }}
+      scheme_buildable: ${{ steps.tar_build_artifact.outputs.scheme_buildable }}
       archive_path: ${{ env.archive_path }}
 
     steps:
@@ -46,7 +46,6 @@ jobs:
             scheme_buildable=$scheme
           fi
           echo "scheme=$scheme" >> $GITHUB_OUTPUT
-          echo "scheme_buildable=$scheme_buildable" >> $GITHUB_OUTPUT
       - name: Set filetype_parameter
         id: filetype_parameter
         run: |
@@ -77,7 +76,19 @@ jobs:
           file_to_build: ${{ steps.file_to_build.outputs.file_to_build }}
         run: xcodebuild archive -archivePath "$archive_path" -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -sdk iphoneos -arch arm64 -configuration Release CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty && exit ${PIPESTATUS[0]}
       - name: Tar Build Artifact
-        run: tar -cvf "$archive_path.xcarchive.tar" "$archive_path.xcarchive"
+        id: tar_build_artifact
+        run: |
+          tar -cvf "$archive_path.xcarchive.tar" "$archive_path.xcarchive"
+          if [ $scheme_buildable = default ]
+          then
+            if [ -d "$archive_path.xcarchive/Products/Applications/$scheme.ipa" ]
+            then
+              scheme_buildable=$scheme
+            else
+              scheme_buildable=$(find "$archive_path.xcarchive/Products/Applications/" -maxdepth 1 -type d -name "*.ipa" -print -quit)
+            fi
+          fi
+          echo "scheme_buildable=$scheme_buildable" >> $GITHUB_OUTPUT
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3
         with:
