@@ -15,7 +15,7 @@ jobs:
     name: Build using xcodebuild command
     runs-on: macos-latest
     env:
-      scheme: default
+      scheme: Frame Grabber Release
       scheme_buildable: default
       archive_path: archive
     outputs:
