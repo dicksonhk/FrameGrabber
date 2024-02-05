@@ -16,9 +16,11 @@ jobs:
     runs-on: macos-latest
     env:
       scheme: default
+      scheme_buildable: default
       archive_path: archive
     outputs:
       scheme: ${{ steps.scheme.outputs.scheme }}
+      scheme_buildable: ${{ steps.scheme.outputs.scheme_buildable }}
       archive_path: ${{ env.archive_path }}
 
     steps:
@@ -39,6 +41,12 @@ jobs:
             echo Using configured scheme: $scheme
           fi
           echo "scheme=$scheme" >> $GITHUB_OUTPUT
+          if [ $scheme_buildable = default ]
+          then
+            scheme_buildable=$scheme
+          fi
+          echo "scheme=$scheme" >> $GITHUB_OUTPUT
+          echo "scheme_buildable=$scheme_buildable" >> $GITHUB_OUTPUT
       - name: Set filetype_parameter
         id: filetype_parameter
         run: |
@@ -81,7 +89,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build]
     env:
-      scheme: ${{ needs.build.outputs.scheme }}
+      scheme: ${{ needs.build.outputs.scheme_buildable }}
       archive_path: ${{ needs.build.outputs.archive_path }}
     outputs:
       artifact: ${{ env.scheme }}.ipa
